@@ -1,9 +1,9 @@
-import os
-from dotenv import load_dotenv
+# flask_quiz_app/config.py
 
-load_dotenv()
+import os
 
 class Config:
-    SECRET_KEY = os.getenv('SECRET_KEY', 'default_key')
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///quiz.db'
+    SECRET_KEY = "supersecretkey"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///../instance/quiz.db"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+

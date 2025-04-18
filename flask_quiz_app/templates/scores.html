@@ -1,0 +1,38 @@
+<!-- flask_quiz_app/templates/scores.html -->
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Tüm Kullanıcı Skorları</title>
+</head>
+<body>
+    <h2>Quiz Sonuçları</h2>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Kullanıcı Adı</th>
+                <th>Skor</th>
+                <th>Tarih</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for score in scores %}
+                <tr>
+                    <td>{{ score.username }}</td>
+                    <td>{{ score.score }}</td>
+                    <td>{{ score.timestamp.strftime('%d.%m.%Y %H:%M') }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <form action="/" method="get">
+        <button type="submit">Ana Sayfaya Dön</button>
+    </form>
+
+    <footer>
+        <p>Gökhan ŞEN tarafından geliştirildi. Tüm hakları saklıdır. © 2025</p>
+    </footer>
+</body>
+</html>

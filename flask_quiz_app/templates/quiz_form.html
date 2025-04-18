@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Formu</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Python Geliştirici Quiz</h1>
+        <p>Başarılar {{ username }}!</p>
+    </header>
+
+    <main>
+        <form action="{{ url_for('submit_answers') }}" method="post">
+            {% for question in questions %}
+                <div class="question-block">
+                    <p><strong>{{ loop.index }}. Soru:</strong> {{ question.question_text }}</p>
+                    <label><input type="radio" name="q{{ question.id }}" value="A" required> A) {{ question.option_a }}</label><br>
+                    <label><input type="radio" name="q{{ question.id }}" value="B"> B) {{ question.option_b }}</label><br>
+                    <label><input type="radio" name="q{{ question.id }}" value="C"> C) {{ question.option_c }}</label><br>
+                    <label><input type="radio" name="q{{ question.id }}" value="D"> D) {{ question.option_d }}</label><br>
+                </div>
+                <hr>
+            {% endfor %}
+            <button type="submit">Cevapları Gönder</button>
+        </form>
+    </main>
+
+    <footer>
+        <p>Gökhan ŞEN tarafından geliştirildi. Tüm hakları saklıdır. © 2025</p>
+    </footer>
+</body>
+</html>
