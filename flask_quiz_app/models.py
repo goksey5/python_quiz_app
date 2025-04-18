@@ -20,7 +20,7 @@ class Question(db.Model):
     option_b = db.Column(db.String(100), nullable=False)
     option_c = db.Column(db.String(100), nullable=False)
     option_d = db.Column(db.String(100), nullable=False)
-    correct_answer = db.Column(db.String(1), nullable=False)  # routes.py ile uyumlu isim
+    correct_option = db.Column(db.String(1), nullable=False)  # ← bunu eklemelisin
 
 # Skor modeli
 class Score(db.Model):
@@ -28,7 +28,8 @@ class Score(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     score = db.Column(db.Integer, nullable=False)
     
-"""class Result(db.Model):
+class Result(db.Model):  
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), nullable=False)
-    score = db.Column(db.Integer, nullable=False)"""
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
+    selected_option = db.Column(db.String(1), nullable=False)
