@@ -1,35 +1,109 @@
-<!-- flask_quiz_app/templates/scores.html -->
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Tüm Kullanıcı Skorları</title>
+    <title>En Yüksek Skorlar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f2f2f2;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #e0e0e0;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .button-container form {
+            display: inline-block;
+            margin: 0 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #005f99;
+        }
+
+        .extra-button {
+            margin-top: 15px;
+        }
+    </style>
 </head>
 <body>
-    <h2>Quiz Sonuçları</h2>
-
-    <table border="1">
+    <h2>En Yüksek Skorlar</h2>
+    <table>
         <thead>
             <tr>
+                <th>Sıra</th>
                 <th>Kullanıcı Adı</th>
                 <th>Skor</th>
-                <th>Tarih</th>
             </tr>
         </thead>
         <tbody>
-            {% for score in scores %}
-                <tr>
-                    <td>{{ score.username }}</td>
-                    <td>{{ score.score }}</td>
-                    <td>{{ score.timestamp.strftime('%d.%m.%Y %H:%M') }}</td>
-                </tr>
+            {% for result in results %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ result.user.username }}</td>
+                <td>{{ result.score }}</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <form action="/" method="get">
-        <button type="submit">Ana Sayfaya Dön</button>
-    </form>
+    <div class="button-container">
+        <form action="/" method="get">
+            <button type="submit">Ana Sayfa</button>
+        </form>
+        <form action="/quiz" method="get">
+            <button type="submit">Yeniden Quiz Çöz</button>
+        </form>
+
+        {% if not show_all %}
+        <div class="extra-button">
+            <form action="{{ url_for('quiz_bp.all_scores') }}" method="get">
+                <button type="submit">Tüm Skorları Gör</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
 
     <footer>
         <p>Gökhan ŞEN tarafından geliştirildi. Tüm hakları saklıdır. © 2025</p>

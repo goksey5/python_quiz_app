@@ -7,10 +7,11 @@
 </head>
 <body>
     <h2>Merhaba {{ username }}, Quiz Sonucun:</h2>
-    <p><strong>Bu Quizde Aldığın Skor:</strong> {{ current_score }}</p>
-    <p><strong>Kendi En Yüksek Skorun:</strong> {{ best_score }}</p>
+    <p><strong>Bu Quizde Aldığın Skor:</strong> {{ score }} / 100</p>
+    <p><strong>Doğru Sayın:</strong> {{ score // 20 }} / 5</p>
+    <p><strong>Kendi En Yüksek Skorun:</strong> {{ best_score }} / 100</p>
 
-    <h3>Genel En Yüksek Skor: {{ global_high_score }}</h3>
+    <h3>Genel En Yüksek Skor: {{ global_high_score }} / 100</h3>
     <p><em>En yüksek skoru alan kişi: {{ global_high_scorer }}</em></p>
 
     <form action="/" method="get">

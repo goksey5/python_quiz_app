@@ -33,3 +33,4 @@ class Result(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
     selected_option = db.Column(db.String(1), nullable=False)
+    user = db.relationship('User', backref='results')
