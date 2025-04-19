@@ -1,8 +1,8 @@
-"""Initial migration
+"""add
 
-Revision ID: bb14f5fd67b3
+Revision ID: 6f48f64ff4ca
 Revises: 
-Create Date: 2025-04-19 00:00:53.037269
+Create Date: 2025-04-19 14:42:54.851881
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'bb14f5fd67b3'
+revision = '6f48f64ff4ca'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -30,24 +30,23 @@ def upgrade():
     )
     op.create_table('user',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('username', sa.String(length=100), nullable=False),
-    sa.Column('highest_score', sa.Integer(), nullable=True),
-    sa.Column('last_score', sa.Integer(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
+    sa.Column('username', sa.String(length=80), nullable=False),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('username')
     )
     op.create_table('result',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('question_id', sa.Integer(), nullable=False),
-    sa.Column('selected_option', sa.String(length=1), nullable=False),
+    sa.Column('question_id', sa.Integer(), nullable=True),
+    sa.Column('selected_option', sa.String(length=1), nullable=True),
     sa.ForeignKeyConstraint(['question_id'], ['question.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('score',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('score', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

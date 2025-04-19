@@ -1,25 +1,28 @@
-<!-- flask_quiz_app/templates/result.html -->
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <title>Quiz Sonucu</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h2>Merhaba {{ username }}, Quiz Sonucun:</h2>
-    <p><strong>Bu Quizde Aldığın Skor:</strong> {{ score }} / 100</p>
-    <p><strong>Doğru Sayın:</strong> {{ score // 20 }} / 5</p>
-    <p><strong>Kendi En Yüksek Skorun:</strong> {{ best_score }} / 100</p>
 
-    <h3>Genel En Yüksek Skor: {{ global_high_score }} / 100</h3>
-    <p><em>En yüksek skoru alan kişi: {{ global_high_scorer }}</em></p>
+    <h2>🎉 Tebrikler {{ username }}! Quiz Sonucun:</h2>
+
+    <div class="score-box">
+        <p><strong>✅ Doğru Sayısı:</strong> {{ score // 20 }} / 5</p>
+        <p><strong>🏆 Aldığın Skor:</strong> {{ score }} / 100</p>
+        <p><strong>📊 Kendi En Yüksek Skorun:</strong> {{ best_score }} / 100</p>
+        <p><strong>🌍 Genel En Yüksek Skor:</strong> {{ global_high_score }} / 100</p>
+        <p><em>👑 En yüksek skoru alan kişi: {{ global_high_scorer }}</em></p>
+    </div>
 
     <form action="/" method="get">
-        <button type="submit">Ana Sayfaya Dön</button>
+        <button type="submit">🏠 Ana Sayfaya Dön</button>
     </form>
 
     <form action="/results" method="get">
-        <button type="submit">Tüm Skorları Gör</button>
+        <button type="submit">📋 Tüm Skorları Gör</button>
     </form>
 
     <footer>
@@ -27,3 +30,4 @@
     </footer>
 </body>
 </html>
+

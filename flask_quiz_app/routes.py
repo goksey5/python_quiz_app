@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from .models import db, User, Question, Score, Result
 import random
 
@@ -18,12 +18,17 @@ def index():
                 db.session.commit()
             session['username'] = username
             return redirect(url_for('quiz_bp.start_quiz'))
+        else:
+            flash("Lütfen bir kullanıcı adı girin.", "warning")
     return render_template('index.html')
 
 # Quiz başlatma – kullanıcının sorularla buluşması
 @quiz_bp.route('/start_quiz', methods=['GET', 'POST'])
 def start_quiz():
     questions = Question.query.all()
+    # ✅ Debug için eklenen satır:
+    print(f"Veritabanındaki Sorular: {questions}")
+    
     if len(questions) < 5:
         return "Yeterli sayıda soru yok. Lütfen veri tabanına daha fazla soru ekleyin."
     
@@ -31,76 +36,135 @@ def start_quiz():
     session['questions'] = [q.id for q in selected_questions]
     session['current_index'] = 0
     session['score'] = 0
+
+    # Debug log ekle
+    print(f"start_quiz - Selected Questions: {session['questions']}")
+    print(f"start_quiz - Current Index: {session['current_index']}")
+    print(f"start_quiz - Oturum Durumu: {session}")
+
     return redirect(url_for('quiz_bp.show_quiz'))
+
+
 
 # Quiz sorularını sırayla gösteren sayfa – quiz_form.html
 @quiz_bp.route('/quiz', methods=['GET'])
 def show_quiz():
-    current_index = session.get('current_index', 0)
-    questions = session.get('questions', [])
+    username = session.get('username')
+    if not username:
+        flash("Kullanıcı adı oturumda bulunamadı. Lütfen tekrar giriş yapın.", "warning")
+        return redirect(url_for('quiz_bp.index'))
 
-    if current_index >= len(questions):
-        return redirect(url_for('quiz_bp.show_result'))
+    if 'questions' not in session:
+        flash("Sorular oturumda bulunamadı, lütfen tekrar quiz başlatın.", "danger")
+        return redirect(url_for('quiz_bp.start_quiz'))
+    
+    questions = Question.query.filter(Question.id.in_(session['questions'])).all()
 
-    question_id = questions[current_index]
-    question = Question.query.get(question_id)
-    return render_template('quiz_form.html', question=question, question_number=current_index + 1)
+    # Debug log ekle
+    print(f"show_quiz - Sorular: {questions}")
+    
+    # Oturum bilgilerini sıfırlayabiliriz
+    session.clear()
+
+    return render_template('quiz_form.html', questions=questions, username=username)
+
+
+
 
 # Kullanıcının verdiği cevapları değerlendirme
 @quiz_bp.route('/submit_answers', methods=['POST'])
 def submit_answers():
-    selected_option = request.form.get('option')
-    current_index = session.get('current_index', 0)
-    questions = session.get('questions', [])
+    username = session.get('username')
 
-    if current_index < len(questions):
-        question_id = questions[current_index]
-        question = Question.query.get(question_id)
+    # Kullanıcı session'da yoksa veya veritabanında bulunamıyorsa
+    if not username:
+        flash("Kullanıcı adı oturumda bulunamadı. Lütfen giriş yapın.", "warning")
+        return redirect(url_for('quiz_bp.index'))
 
-        # İlk kez doğru cevap sayısı başlat
-        if 'correct_count' not in session:
-            session['correct_count'] = 0
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        # Bu durumda kullanıcıyı veritabanına ekle
+        user = User(username=username)
+        db.session.add(user)
+        db.session.commit()  # ID'yi oluşturması için
 
+    questions = Question.query.all()
+    correct_count = 0
+
+    for question in questions:
+        selected_option = request.form.get(f'q{question.id}')
         if selected_option == question.correct_option:
-            session['correct_count'] += 1
+            correct_count += 20
 
-        session['current_index'] += 1
+        result = Result(user=user, question_id=question.id, selected_option=selected_option)
+        db.session.add(result)
+    
+    # Skoru Score tablosuna kaydet
+    score = Score(user=user, score=correct_count)
+    db.session.add(score)
+    db.session.commit()
 
-    if session['current_index'] >= len(questions):
-        return redirect(url_for('quiz_bp.show_result'))
-    else:
-        return redirect(url_for('quiz_bp.show_quiz'))
+    session['score'] = correct_count
+    return redirect(url_for('quiz_bp.show_result'))
+
+# routes.py içinden
+
+@quiz_bp.route('/submit_answers', methods=['POST'])
+def submit_answers():
+    username = session.get('username')
+
+    if not username:
+        flash("Kullanıcı adı oturumda bulunamadı. Lütfen giriş yapın.", "warning")
+        return redirect(url_for('quiz_bp.index'))
+
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        user = User(username=username)
+        db.session.add(user)
+        db.session.commit()
+
+    questions = Question.query.all()
+    correct_count = 0
+
+    for question in questions:
+        selected_option = request.form.get(f'q{question.id}')
+        if selected_option == question.correct_option:
+            correct_count += 20
+
+        result = Result(user=user, question_id=question.id, selected_option=selected_option)
+        db.session.add(result)
+
+    score = Score(user=user, score=correct_count)
+    db.session.add(score)
+    db.session.commit()
+
+    session['score'] = correct_count
+    return redirect(url_for('quiz_bp.show_result'))
 
 
-# Sonuçları gösteren sayfa – result.html
 @quiz_bp.route('/result')
 def show_result():
     username = session.get('username')
-    correct_count = session.get('correct_count', 0)
-    score = correct_count * 20  # Her doğru 20 puan
+    score = session.get('score', 0)
 
     if not username:
+        flash("Kullanıcı adı oturumda bulunamadı. Lütfen giriş yapın.", "warning")
         return redirect(url_for('quiz_bp.index'))
 
     user = User.query.filter_by(username=username).first()
 
     if user:
-        user.last_score = score
         if score > user.highest_score:
             user.highest_score = score
         db.session.commit()
         best_score = user.highest_score
     else:
         best_score = score
-     # Skorları kaydet
-    db.session.add(Score(username=username, score=score))
-    db.session.add(Result(username=username, score=score))
-    db.session.commit()
 
     # Genel en yüksek skoru ve sahibi
-    top_result = db.session.query(Result).order_by(Result.score.desc()).first()
-    global_high_score = top_result.score if top_result else 0
-    global_high_scorer = top_result.username if top_result else "Henüz kimse yok"
+    top_score = db.session.query(Score).order_by(Score.score.desc()).first()
+    global_high_score = top_score.score if top_score else 0
+    global_high_scorer = top_score.user.username if top_score and top_score.user else "Henüz kimse yok"
 
     return render_template(
         'result.html',
@@ -110,15 +174,15 @@ def show_result():
         global_high_score=global_high_score,
         global_high_scorer=global_high_scorer
     )
-# İlk 10 skoru gösteren sayfa
+
+
 @quiz_bp.route('/scores')
 def top_scores():
-    results = Result.query.order_by(Result.score.desc()).limit(10).all()
+    results = Score.query.order_by(Score.score.desc()).limit(10).all()
     return render_template('scores.html', results=results, show_all=False)
 
-# Tüm skorları listeleyen sayfa
+
 @quiz_bp.route('/results')
 def all_scores():
-    results = Result.query.order_by(Result.score.desc()).all()
+    results = Score.query.order_by(Score.score.desc()).all()
     return render_template('scores.html', results=results, show_all=True)
-

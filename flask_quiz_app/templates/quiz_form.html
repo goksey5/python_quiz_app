@@ -12,7 +12,7 @@
     </header>
 
     <main>
-        <form action="{{ url_for('submit_answers') }}" method="post">
+        <form action="{{ url_for('quiz_bp.submit_answers') }}" method="post">
             {% for question in questions %}
                 <div class="question-block">
                     <p><strong>{{ loop.index }}. Soru:</strong> {{ question.question_text }}</p>
