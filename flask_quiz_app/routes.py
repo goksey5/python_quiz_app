@@ -73,7 +73,11 @@ def show_quiz():
 
 # Kullanıcının verdiği cevapları değerlendirme
 @quiz_bp.route('/submit_answers', methods=['POST'])
+
 def submit_answers():
+    print("submit_answers - Session içeriği:", dict(session))
+    print("Request Cookies:", request.cookies)
+    print("Request Form:", request.form)
     username = session.get('username')
 
     # Kullanıcı session'da yoksa veya veritabanında bulunamıyorsa
@@ -92,7 +96,8 @@ def submit_answers():
     correct_count = 0
 
     for question in questions:
-        selected_option = request.form.get(f'q{question.id}')
+        selected_option = request.form.get(f'question_{question.id}')
+
         if selected_option == question.correct_option:
             correct_count += 20
 
@@ -107,39 +112,7 @@ def submit_answers():
     session['score'] = correct_count
     return redirect(url_for('quiz_bp.show_result'))
 
-# routes.py içinden
-
-@quiz_bp.route('/submit_answers', methods=['POST'])
-def submit_answers():
-    username = session.get('username')
-
-    if not username:
-        flash("Kullanıcı adı oturumda bulunamadı. Lütfen giriş yapın.", "warning")
-        return redirect(url_for('quiz_bp.index'))
-
-    user = User.query.filter_by(username=username).first()
-    if not user:
-        user = User(username=username)
-        db.session.add(user)
-        db.session.commit()
-
-    questions = Question.query.all()
-    correct_count = 0
-
-    for question in questions:
-        selected_option = request.form.get(f'q{question.id}')
-        if selected_option == question.correct_option:
-            correct_count += 20
-
-        result = Result(user=user, question_id=question.id, selected_option=selected_option)
-        db.session.add(result)
-
-    score = Score(user=user, score=correct_count)
-    db.session.add(score)
-    db.session.commit()
-
-    session['score'] = correct_count
-    return redirect(url_for('quiz_bp.show_result'))
+    print("Gelen form verileri:", dict(request.form))
 
 
 @quiz_bp.route('/result')
