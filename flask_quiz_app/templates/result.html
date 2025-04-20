@@ -6,25 +6,22 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-
-    <h2>🎉 Tebrikler {{ username }}! Quiz Sonucun:</h2>
-
-    <div class="score-box">
-        <p><strong>✅ Doğru Sayısı:</strong> {{ score // 20 }} / 5</p>
-        <p><strong>🏆 Aldığın Skor:</strong> {{ score }} / 100</p>
-        <p><strong>📊 Kendi En Yüksek Skorun:</strong> {{ best_score }} / 100</p>
-        <p><strong>🌍 Genel En Yüksek Skor:</strong> {{ global_high_score }} / 100</p>
-        <p><em>👑 En yüksek skoru alan kişi: {{ global_high_scorer }}</em></p>
+    <div class="result-container">
+        <h2>🎉 Tebrikler {{ username }}! Quiz Sonucun:</h2>
+        <div class="score-box">
+            <p><strong>✅ Doğru Sayısı:</strong> {{ score // 20 }} / 5</p>
+            <p><strong>🏆 Aldığın Skor:</strong> {{ score }} / 100</p>
+            <p><strong>📊 Kendi En Yüksek Skorun:</strong> {{ best_score }} / 100</p>
+            <p><strong>🌍 Genel En Yüksek Skor:</strong> {{ global_high_score }} / 100</p>
+            <p><em>👑 En yüksek skoru alan kişi: {{ global_high_scorer }}</em></p>
+        </div>
+        <form action="/" method="get">
+            <button type="submit">🏠 Ana Sayfaya Dön</button>
+        </form>
+        <form action="/results" method="get">
+            <button type="submit">📋 Tüm Skorları Gör</button>
+        </form>
     </div>
-
-    <form action="/" method="get">
-        <button type="submit">🏠 Ana Sayfaya Dön</button>
-    </form>
-
-    <form action="/results" method="get">
-        <button type="submit">📋 Tüm Skorları Gör</button>
-    </form>
-
     <footer>
         <p>Gökhan ŞEN tarafından geliştirildi. Tüm hakları saklıdır. © 2025</p>
     </footer>

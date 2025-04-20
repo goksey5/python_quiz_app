@@ -1,24 +1,27 @@
-<!-- flask_quiz_app/templates/quiz.html -->
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <title>Quiz Sayfası</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h2>{{ username }} için Quiz</h2>
-    <form action="{{ url_for('quiz_bp.submit_answers') }}" method="post">
-
-        {% for question in questions %}
-            <div>
-                <p><strong>{{ loop.index }}. {{ question.text }}</strong></p>
-                {% for choice in question.choices %}
-                    <input type="radio" name="question_{{ question.id }}" value="{{ choice }}" required> {{ choice }}<br>
-                {% endfor %}
-            </div>
-        {% endfor %}
-        <button type="submit">Cevapları Gönder</button>
-    </form>
+    <div class="quiz-container">
+        <h2>{{ username }} için Quiz</h2>
+        <form action="{{ url_for('quiz_bp.submit_answers') }}" method="post">
+            {% for question in questions %}
+                <div class="question-box">
+                    <p><strong>{{ loop.index }}. {{ question.text }}</strong></p>
+                    {% for choice in question.choices %}
+                        <div class="choice">
+                            <input type="radio" name="question_{{ question.id }}" value="{{ choice }}" required> {{ choice }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <button type="submit">Cevapları Gönder</button>
+        </form>
+    </div>
 
     <footer>
         <p>Gökhan ŞEN tarafından geliştirildi. Tüm hakları saklıdır. © 2025</p>
