@@ -9,7 +9,7 @@ class Question(db.Model):
     option_b = db.Column(db.String(100), nullable=False)
     option_c = db.Column(db.String(100), nullable=False)
     option_d = db.Column(db.String(100), nullable=False)
-    correct_option = db.Column(db.String(1), nullable=False)
+    correct_option = db.Column(db.String(1), nullable=False)  
 
     # Bir soruya verilen tüm cevaplar (Result tablosu ilişkisi)
     results = db.relationship('Result', back_populates='question', cascade='all, delete-orphan')

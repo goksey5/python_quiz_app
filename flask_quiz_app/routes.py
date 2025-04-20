@@ -64,7 +64,7 @@ def show_quiz():
     print(f"show_quiz - Sorular: {questions}")
     
     # Oturum bilgilerini sıfırlayabiliriz
-    session.clear()
+ 
 
     return render_template('quiz_form.html', questions=questions, username=username)
 
@@ -75,6 +75,9 @@ def show_quiz():
 @quiz_bp.route('/submit_answers', methods=['POST'])
 
 def submit_answers():
+    print("🧠 DEBUG - Username in session:", session.get('username'))
+    
+   
     print("submit_answers - Session içeriği:", dict(session))
     print("Request Cookies:", request.cookies)
     print("Request Form:", request.form)
@@ -110,9 +113,10 @@ def submit_answers():
     db.session.commit()
 
     session['score'] = correct_count
+    print("Gelen form verileri:", dict(request.form))
     return redirect(url_for('quiz_bp.show_result'))
 
-    print("Gelen form verileri:", dict(request.form))
+    
 
 
 @quiz_bp.route('/result')
