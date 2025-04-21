@@ -1,0 +1,30 @@
+# Python derleyici dosyaları
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Ortam dosyaları
+.env
+
+
+# Çalışma dosyaları
+*.sqlite3
+*.db
+*.log
+
+# IDE dosyaları
+.vscode/
+.idea/
+
+# PythonAnywhere özel klasörleri
+/tmp
+/instance/
+
+# Sanal ortamlar
+venv/
+env/
+ENV/
+
+# Migrations
+migrations/
+

@@ -1,6 +1,6 @@
 from flask_quiz_app import create_app
 from flask_quiz_app.extensions import db
-from flask_quiz_app.models import Question, User, Score, Result  # ← Result'ı ekle
+from flask_quiz_app.models import Question, User, Score, Result  
 
 app = create_app()
 
@@ -11,7 +11,7 @@ def make_shell_context():
         "Question": Question,
         "User": User,
         "Score": Score,
-        "Result": Result   # ← Shell için Result da eklendi
+        "Result": Result  
     }
 
 if __name__ == '__main__':

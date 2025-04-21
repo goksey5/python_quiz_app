@@ -2,10 +2,8 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from .models import db, User, Question, Score, Result
 import random
 
-# Blueprint tanımlıyoruz: 'quiz_bp' adında bir grup URL tanımı yapacağız
 quiz_bp = Blueprint('quiz_bp', __name__)
 
-# Kullanıcı giriş sayfası – index.html
 @quiz_bp.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -22,11 +20,9 @@ def index():
             flash("Lütfen bir kullanıcı adı girin.", "warning")
     return render_template('index.html')
 
-# Quiz başlatma – kullanıcının sorularla buluşması
 @quiz_bp.route('/start_quiz', methods=['GET', 'POST'])
 def start_quiz():
     questions = Question.query.all()
-    # ✅ Debug için eklenen satır:
     print(f"Veritabanındaki Sorular: {questions}")
     
     if len(questions) < 5:
@@ -37,7 +33,6 @@ def start_quiz():
     session['current_index'] = 0
     session['score'] = 0
 
-    # Debug log ekle
     print(f"start_quiz - Selected Questions: {session['questions']}")
     print(f"start_quiz - Current Index: {session['current_index']}")
     print(f"start_quiz - Oturum Durumu: {session}")
@@ -46,7 +41,6 @@ def start_quiz():
 
 
 
-# Quiz sorularını sırayla gösteren sayfa – quiz_form.html
 @quiz_bp.route('/quiz', methods=['GET'])
 def show_quiz():
     username = session.get('username')
@@ -60,10 +54,8 @@ def show_quiz():
     
     questions = Question.query.filter(Question.id.in_(session['questions'])).all()
 
-    # Debug log ekle
     print(f"show_quiz - Sorular: {questions}")
     
-    # Oturum bilgilerini sıfırlayabiliriz
  
 
     return render_template('quiz_form.html', questions=questions, username=username)
@@ -71,29 +63,21 @@ def show_quiz():
 
 
 
-# Kullanıcının verdiği cevapları değerlendirme
 @quiz_bp.route('/submit_answers', methods=['POST'])
 
 def submit_answers():
-    print("🧠 DEBUG - Username in session:", session.get('username'))
-    
    
-    print("submit_answers - Session içeriği:", dict(session))
-    print("Request Cookies:", request.cookies)
-    print("Request Form:", request.form)
     username = session.get('username')
 
-    # Kullanıcı session'da yoksa veya veritabanında bulunamıyorsa
     if not username:
         flash("Kullanıcı adı oturumda bulunamadı. Lütfen giriş yapın.", "warning")
         return redirect(url_for('quiz_bp.index'))
 
     user = User.query.filter_by(username=username).first()
     if not user:
-        # Bu durumda kullanıcıyı veritabanına ekle
         user = User(username=username)
         db.session.add(user)
-        db.session.commit()  # ID'yi oluşturması için
+        db.session.commit()  
 
     questions = Question.query.all()
     correct_count = 0
@@ -107,7 +91,6 @@ def submit_answers():
         result = Result(user=user, question_id=question.id, selected_option=selected_option)
         db.session.add(result)
     
-    # Skoru Score tablosuna kaydet
     score = Score(user=user, score=correct_count)
     db.session.add(score)
     db.session.commit()
@@ -138,7 +121,6 @@ def show_result():
     else:
         best_score = score
 
-    # Genel en yüksek skoru ve sahibi
     top_score = db.session.query(Score).order_by(Score.score.desc()).first()
     global_high_score = top_score.score if top_score else 0
     global_high_scorer = top_score.user.username if top_score and top_score.user else "Henüz kimse yok"
